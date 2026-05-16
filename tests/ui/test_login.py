@@ -1,8 +1,5 @@
 import pytest
 from pages.login_page import LoginPage
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 """ 登录模块 """
 @pytest.mark.parametrize("input_username, input_password, expected_success", [
@@ -21,6 +18,9 @@ def test_login(driver, input_username, input_password, expected_success):
     page.click_login_button()
 
     assert page.is_login_successful() == expected_success
+
+    page.logout()
+
 
 
 

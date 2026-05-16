@@ -18,6 +18,7 @@ def driver():
     driver = DriverManager.Chrome(options=options)
     driver.maximize_window()  # 浏览器窗口最大化
     yield driver
+    driver.delete_all_cookies()  # 清理 cookies（仅仅是test_login使用）
     driver.quit()
 
 # =====================

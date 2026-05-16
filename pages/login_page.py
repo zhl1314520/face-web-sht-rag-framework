@@ -11,6 +11,7 @@ class LoginPage(BasePage):
     username_input = (By.ID, "username")
     password_input = (By.ID, "password")
     login_button = (By.CLASS_NAME, "btn")   # 不要选择全部的 btn，可能会有多个
+    logout_button = (By.XPATH,  "//a[contains(@href,'logout')]")
 
     def open(self):
         self.driver.get(self.url)
@@ -24,16 +25,20 @@ class LoginPage(BasePage):
     def click_login_button(self):
         self.click(self.login_button)
 
-    def clear_inputs(self):
-        self.find(self.username_input).clear()
-        self.find(self.password_input).clear()
 
     def is_login_successful(self):
         try:
-            self.find((By.CLASS_NAME, "alert-success"))
+            self.driver.find_element(By.CLASS_NAME, "alert-success")
             return True
-        except (NoSuchElementException, TimeoutException):
+        except NoSuchElementException:
             return False
 
-    def return_login_page(self):
-        self.driver.back()
+    def logout(self):
+        try:
+            self.click(self.logout_button)
+            # 等待回到登录页或确认退出成功
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.ID, "username"))
+            )
+        except:
+            pass  # 如果已经退出或找不到退出按钮，忽略
