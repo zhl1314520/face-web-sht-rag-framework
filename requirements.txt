@@ -1,0 +1,5 @@
+pytest==9.0.3
+selenium==4.43.0
+allure-pytest==2.15.3
+requests==2.33.1
+pyyaml==6.0.3

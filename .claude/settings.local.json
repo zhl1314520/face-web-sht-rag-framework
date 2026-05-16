@@ -1,0 +1,12 @@
+{
+  "model_reasoning_effort": "medium",
+  "temperature": 0.1,
+  "max_tokens": 8000,
+  "disable_response_storage": true,
+  "debug": false,
+  "log_level": "error",
+  "tools": {
+    "browser": true,
+    "shell": true
+  }
+}
