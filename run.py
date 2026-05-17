@@ -21,6 +21,6 @@ if __name__ == "__main__":
 
 
     """ UI """
-    run_case("tests/ui/test_login.py", "test_login")
+    # run_case("tests/ui/test_login.py", "test_login")
 
-    # run_case("tests/ui/test_project.py", "test_project_create_button")
+    run_case("tests/ui/test_register.py", "test_register")

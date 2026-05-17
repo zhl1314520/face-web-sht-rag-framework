@@ -25,12 +25,11 @@ class LoginPage(BasePage):
     def click_login_button(self):
         self.click(self.login_button)
 
-
     def is_login_successful(self):
         try:
             self.driver.find_element(By.CLASS_NAME, "alert-success")
             return True
-        except NoSuchElementException:
+        except (NoSuchElementException, TimeoutException):
             return False
 
     def logout(self):
@@ -42,3 +41,10 @@ class LoginPage(BasePage):
             )
         except:
             pass  # 如果已经退出或找不到退出按钮，忽略
+
+    # 封装的 login
+    def encapsulated_login(self, username, password):
+        self.open()
+        self.input_username(username)
+        self.input_password(password)
+        self.click_login_button()
