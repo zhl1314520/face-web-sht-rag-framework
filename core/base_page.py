@@ -1,6 +1,6 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 """ UI 基类"""
 class BasePage:     # 所有继承 BasePage 的都带有显式等待
@@ -29,3 +29,12 @@ class BasePage:     # 所有继承 BasePage 的都带有显式等待
         el = self.find(locator)
         el.clear()
         el.send_keys(text)
+
+    def accept_alert(self):
+        """处理浏览器弹窗"""
+        try:
+            alert = WebDriverWait(self.driver, 2).until(EC.alert_is_present())
+            alert.accept()
+            return True
+        except (TimeoutException, NoSuchElementException):
+            return False

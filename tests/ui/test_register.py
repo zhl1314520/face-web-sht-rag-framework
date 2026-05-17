@@ -1,12 +1,18 @@
 import pytest
 
-from pages.login_page import LoginPage
 from pages.register_page import RegisterPage
 
-
 """ 注册模块 """
+
+
 @pytest.mark.parametrize("input_username, input_password, input_password_confirm, expected_success", [
-    ("admin123456", "admin123456", "admin123456", True)
+    # ("admin123456", "admin123456", "admin123456", True),
+    ("admin123123", "admin123123", "admin123123", True),
+    ("admin1234567", "admin1234567", "admin1234567", True),
+    ("admin12345678", "admin12345678", "admin12345678", True),
+    ("admin1234567890", "admin1234567890", "admin1234567890", True),
+    ("admin12345678901", "admin12345678901", "admin12345678901", True),
+    ("admin123456789012", "admin123456789012", "admin123456789012", True),
 ])
 def test_register(driver, input_username, input_password, input_password_confirm, expected_success):
     page_login = RegisterPage(driver)
@@ -20,11 +26,6 @@ def test_register(driver, input_username, input_password, input_password_confirm
     page_register.input_password(input_password)
     page_register.input_password_again(input_password_confirm)
     page_register.click_register_page_button()
+    page_register.accept_alert()
 
     assert page_register.is_return_to_login_page() == expected_success
-
-
-
-
-
-
