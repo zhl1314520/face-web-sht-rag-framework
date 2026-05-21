@@ -16,9 +16,9 @@ def test_product_create_button(driver, general_login, expected_success = True):
     assert page.is_click_create_product_button_success() == expected_success
 
 @pytest.mark.parametrize("name, description, price, expected_success", [
-    ("Test Product1", "This is a test product.", "2", True),
+    ("Test Product2", "This is a test product.", "2", True),
 ])
-def test_product2_view(driver, general_login, expected_success, name, description, price):
+def test_product2_function_button(driver, general_login, expected_success, name, description, price):
     page = ProductPage(driver)
     page.open()
     pause(2)
@@ -37,6 +37,12 @@ def test_product2_view(driver, general_login, expected_success, name, descriptio
     pause(2)
 
     assert page.is_update_product_success() == expected_success
+
+    page.click(page.delete_button)
+    page.click(page.cancel_delete)
+    pause(2)
+
+    assert page.is_return_products_main_page() == expected_success
 
 
 

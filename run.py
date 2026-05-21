@@ -27,4 +27,4 @@ if __name__ == "__main__":
 
     # run_case("tests/ui/test_product.py", "test_product_create_button")
 
-    run_case("tests/ui/test_product.py", "test_product2_view")
+    run_case("tests/ui/test_product.py", "test_product2_function_button")

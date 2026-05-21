@@ -18,6 +18,8 @@ class ProductPage(BasePage):
     product_description_input = (By.ID, "id_description")
     product_price_input = (By.ID, "id_price")
     update_button = (By.XPATH, "//button[contains(@type, 'submit')]")
+    delete_button = (By.XPATH, "//a[contains(@href, '/delete/2')]")
+    cancel_delete = (By.LINK_TEXT, "Cancel")
 
     def open(self):
         self.driver.get(self.url)
