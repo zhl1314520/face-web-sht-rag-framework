@@ -11,7 +11,6 @@ def test_product_create_button(driver, general_login, expected_success = True):
     page = ProductPage(driver)
     page.open()
     page.click(page.product_create_button)
-    pause(2)
 
     assert page.is_click_create_product_button_success() == expected_success
 
@@ -21,7 +20,6 @@ def test_product_create_button(driver, general_login, expected_success = True):
 def test_product2_function_button(driver, general_login, expected_success, name, description, price):
     page = ProductPage(driver)
     page.open()
-    pause(2)
     page.click(page.product_view2)
 
     assert page.is_view2_success() == expected_success
@@ -32,18 +30,23 @@ def test_product2_function_button(driver, general_login, expected_success, name,
 
     page.clean_inputs()
     page.input_product_details(name, description, price)
-    pause(1)
     page.click(page.update_button)
-    pause(2)
 
     assert page.is_update_product_success() == expected_success
 
     page.click(page.delete_button)
     page.click(page.cancel_delete)
-    pause(2)
 
     assert page.is_return_products_main_page() == expected_success
 
+    page.click(page.import_JSON_button)
+
+    assert page.is_access_import_JSON_page_success() == expected_success
+
+    page.input(page.browse, r"D:\Desktop\html(3)\products.json")
+    page.click(page.submit_import_button)
+
+    assert page.is_import_JSON_success() == expected_success
 
 
 

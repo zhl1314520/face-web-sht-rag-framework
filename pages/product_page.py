@@ -20,6 +20,9 @@ class ProductPage(BasePage):
     update_button = (By.XPATH, "//button[contains(@type, 'submit')]")
     delete_button = (By.XPATH, "//a[contains(@href, '/delete/2')]")
     cancel_delete = (By.LINK_TEXT, "Cancel")
+    import_JSON_button = (By.LINK_TEXT, "Import JSON")
+    browse = (By.ID, "jsonFile")
+    submit_import_button = (By.XPATH, "//button[contains(@type, 'submit')]")
 
     def open(self):
         self.driver.get(self.url)
@@ -80,7 +83,27 @@ class ProductPage(BasePage):
     def is_update_product_success(self):
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.text_to_be_present_in_element((By.CLASS_NAME, "alert-success"), "Product successfully updated!")
+                EC.text_to_be_present_in_element((By.CLASS_NAME, "alert-success"),
+                                                 "Product successfully updated!")
+            )
+            return True
+        except:
+            return False
+
+    def is_access_import_JSON_page_success(self):
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located((By.ID, "importJsonModalLabel"))
+            )
+            return True
+        except:
+            return False
+
+    def is_import_JSON_success(self):
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.text_to_be_present_in_element((By.CLASS_NAME, "alert-success"),
+                                                 "Successfully imported 1 product(s).")
             )
             return True
         except:
