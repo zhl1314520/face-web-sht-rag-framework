@@ -6,8 +6,8 @@ from config.settings import settings_frontend
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 class RegisterPage(BasePage):
-    login_url = settings_frontend.config["base_url"] + "/login"
-    register_url = settings_frontend.config["base_url"] + "/register"
+    login_url = settings_frontend.base_url + "/login"
+    register_url = settings_frontend.base_url + "/register"
 
     register_button = (By.LINK_TEXT, "Create Account")
     username_input = (By.ID, "id_username")

@@ -6,7 +6,7 @@ from config.settings import settings_frontend
 
 
 class ProductPage(BasePage):
-    url = settings_frontend.config["base_url"]
+    url = settings_frontend.base_url
 
     product_create_button = (By.LINK_TEXT, "New Product")
     product_view1 = (By.XPATH, "//a[contains(@href, '/view/1')]")

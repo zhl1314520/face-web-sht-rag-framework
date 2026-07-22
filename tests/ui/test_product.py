@@ -3,6 +3,7 @@ from pages.product_page import ProductPage
 import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from config.settings import settings_frontend
 
 """ 项目模块 """
 
@@ -43,7 +44,8 @@ def test_product2_function_button(driver, general_login, expected_success, name,
 
     assert page.is_access_import_JSON_page_success() == expected_success
 
-    page.input(page.browse, r"D:\Desktop\html(3)\products.json")
+    # "实际的 products.json 路径"
+    page.input(page.browse, str(settings_frontend.import_json_file))
     page.click(page.submit_import_button)
 
     assert page.is_import_JSON_success() == expected_success

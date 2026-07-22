@@ -6,7 +6,7 @@ from config.settings import settings_frontend
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 class LoginPage(BasePage):
-    url = settings_frontend.config["base_url"] + "/login"
+    url = settings_frontend.base_url + "/login"
 
     username_input = (By.ID, "username")
     password_input = (By.ID, "password")

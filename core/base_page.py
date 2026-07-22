@@ -1,15 +1,15 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from config.settings import settings_frontend
 
-""" UI 基类"""
-class BasePage:     # 所有继承 BasePage 的都带有显式等待
 
-    # 大量使用 self：每个页面类实例都有自己的 wait 对象（login_page, dashboard_page 等）
-
-    def __init__(self, driver):
+class BasePage:
+    # 构造函数（初始化方法）：创建 BasePage 对象自动执行
+    def __init__(self, driver, timeout=None):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
+        self.timeout = timeout or settings_frontend.timeout
+        self.wait = WebDriverWait(driver, self.timeout)
 
     # 封装等待方法：查找单个元素
     def find(self, locator):    # locator ：一个元组 (定位策略, 定位值) ，例如 (By.ID, "email")
