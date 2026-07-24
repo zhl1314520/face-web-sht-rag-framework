@@ -1,9 +1,13 @@
+import logging
+
 from core.base_page import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from config.settings import settings_frontend
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+
+logger = logging.getLogger(__name__)
 
 class LoginPage(BasePage):
     url = settings_frontend.base_url + "/login"
@@ -35,12 +39,11 @@ class LoginPage(BasePage):
     def logout(self):
         try:
             self.click(self.logout_button)
-            # 等待回到登录页或确认退出成功
             WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.ID, "username"))
             )
-        except:
-            pass  # 如果已经退出或找不到退出按钮，忽略
+        except (TimeoutException, NoSuchElementException) as e:
+            logger.warning(f"退出登录异常: {e}")
 
     # 封装的 login
     def encapsulated_login(self, username, password):

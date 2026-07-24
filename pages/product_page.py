@@ -1,8 +1,13 @@
+import logging
+
 from core.base_page import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from config.settings import settings_frontend
+from selenium.common.exceptions import TimeoutException
+
+logger = logging.getLogger(__name__)
 
 
 class ProductPage(BasePage):
@@ -31,7 +36,8 @@ class ProductPage(BasePage):
         try:
             WebDriverWait(self.driver, 5).until(EC.url_contains("/new"))
             return True
-        except:
+        except TimeoutException as e:
+            logger.warning(f"点击创建产品按钮后未跳转到 /new: {e}")
             return False
 
     def is_view1_success(self):
@@ -40,7 +46,8 @@ class ProductPage(BasePage):
                 EC.url_contains("/view/1")
             )
             return True
-        except:
+        except TimeoutException as e:
+            logger.warning(f"未成功跳转到 /view/1: {e}")
             return False
 
     def is_view2_success(self):
@@ -49,7 +56,8 @@ class ProductPage(BasePage):
                 EC.url_contains("/view/2")
             )
             return True
-        except:
+        except TimeoutException as e:
+            logger.warning(f"未成功跳转到 /view/2: {e}")
             return False
 
     def is_return_products_main_page(self):
@@ -58,7 +66,8 @@ class ProductPage(BasePage):
                 EC.text_to_be_present_in_element((By.TAG_NAME, "h1"),"Products")
             )
             return True
-        except:
+        except TimeoutException as e:
+            logger.warning(f"未返回产品主页: {e}")
             return False
 
     def is_access_edit_product2_success(self):
@@ -67,7 +76,8 @@ class ProductPage(BasePage):
                 EC.url_contains("/edit/2")
             )
             return True
-        except:
+        except TimeoutException as e:
+            logger.warning(f"未成功跳转到 /edit/2: {e}")
             return False
 
     def clean_inputs(self):
@@ -87,7 +97,8 @@ class ProductPage(BasePage):
                                                  "Product successfully updated!")
             )
             return True
-        except:
+        except TimeoutException as e:
+            logger.warning(f"产品更新失败或未出现成功提示: {e}")
             return False
 
     def is_access_import_JSON_page_success(self):
@@ -96,7 +107,8 @@ class ProductPage(BasePage):
                 EC.visibility_of_element_located((By.ID, "importJsonModalLabel"))
             )
             return True
-        except:
+        except TimeoutException as e:
+            logger.warning(f"导入 JSON 弹窗未出现: {e}")
             return False
 
     def is_import_JSON_success(self):
@@ -106,5 +118,6 @@ class ProductPage(BasePage):
                                                  "Successfully imported 1 product(s).")
             )
             return True
-        except:
+        except TimeoutException as e:
+            logger.warning(f"JSON 导入失败或未出现成功提示: {e}")
             return False
