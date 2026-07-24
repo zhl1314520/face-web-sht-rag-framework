@@ -16,9 +16,11 @@ from config.settings import settings_frontend
 # ======
 @pytest.fixture(scope="session")
 def driver():
-    options = DriverManager.ChromeOptions()
-    options.page_load_strategy = "eager"
-    driver = DriverManager.Chrome(options=options)
+    driver = DriverManager.get_driver(
+        browser=settings_frontend.browser,
+        headless=settings_frontend.headless,
+        remote_url=settings_frontend.remote_url,
+    )
     driver.maximize_window()
     yield driver
     driver.delete_all_cookies()

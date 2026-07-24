@@ -66,6 +66,23 @@ class Settings:
     def import_json_file(self):
         return self.test_data_dir / self.common.get("import_json_file", "products.json")
 
+    @property
+    def browser(self):
+        return os.environ.get("TEST_BROWSER", self.common.get("browser", "chrome"))
+
+    @property
+    def headless(self):
+        env_val = os.environ.get("TEST_HEADLESS", "").lower()
+        if env_val in ("true", "1", "yes"):
+            return True
+        if env_val in ("false", "0", "no"):
+            return False
+        return self.common.get("headless", False)
+
+    @property
+    def remote_url(self):
+        return os.environ.get("TEST_REMOTE_URL", self.common.get("remote_url", ""))
+
 
 def get_settings(env="dev-backend"):    # 定义参数： env，默认值为 "dev-backend"
     """使用单例模式，获取配置单例，同一环境只创建一次"""
