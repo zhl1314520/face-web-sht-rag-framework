@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Test Product2",
+    "description": "This is a test product.",
+    "price": "2",
+    "expected_success": true
+  }
+]

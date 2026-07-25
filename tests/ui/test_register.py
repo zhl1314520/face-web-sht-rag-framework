@@ -1,19 +1,17 @@
 import pytest
 
 from pages.register_page import RegisterPage
+from utils.data_loader import load_test_data
 
 """ 注册模块 """
 
+register_data = load_test_data("ui_register.json")
+# register_params = [tuple(d.values()) for d in register_data]
+register_params = []
+for data in register_data:
+    register_params.append(tuple(data.values()))
 
-@pytest.mark.parametrize("input_username, input_password, input_password_confirm, expected_success", [
-    # ("admin123456", "admin123456", "admin123456", True),
-    ("admin123123", "admin123123", "admin123123", True),
-    ("admin1234567", "admin1234567", "admin1234567", True),
-    ("admin12345678", "admin12345678", "admin12345678", True),
-    ("admin1234567890", "admin1234567890", "admin1234567890", True),
-    ("admin12345678901", "admin12345678901", "admin12345678901", True),
-    ("admin123456789012", "admin123456789012", "admin123456789012", True),
-])
+@pytest.mark.parametrize("input_username, input_password, input_password_confirm, expected_success", register_params)
 def test_register(driver, input_username, input_password, input_password_confirm, expected_success):
     page_login = RegisterPage(driver)
     page_login.open_login()

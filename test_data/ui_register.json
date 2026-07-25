@@ -1,0 +1,38 @@
+[
+  {
+    "input_username": "admin123123",
+    "input_password": "admin123123",
+    "input_password_confirm": "admin123123",
+    "expected_success": true
+  },
+  {
+    "input_username": "admin1234567",
+    "input_password": "admin1234567",
+    "input_password_confirm": "admin1234567",
+    "expected_success": true
+  },
+  {
+    "input_username": "admin12345678",
+    "input_password": "admin12345678",
+    "input_password_confirm": "admin12345678",
+    "expected_success": true
+  },
+  {
+    "input_username": "admin1234567890",
+    "input_password": "admin1234567890",
+    "input_password_confirm": "admin1234567890",
+    "expected_success": true
+  },
+  {
+    "input_username": "admin12345678901",
+    "input_password": "admin12345678901",
+    "input_password_confirm": "admin12345678901",
+    "expected_success": true
+  },
+  {
+    "input_username": "admin123456789012",
+    "input_password": "admin123456789012",
+    "input_password_confirm": "admin123456789012",
+    "expected_success": true
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "username": "admin",
+    "password": "zxcvbnm",
+    "expected_status": 302
+  },
+  {
+    "username": "17263937422@163.com",
+    "password": "",
+    "expected_status": 200
+  },
+  {
+    "username": "",
+    "password": "123456",
+    "expected_status": 200
+  }
+]

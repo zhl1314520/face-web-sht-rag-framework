@@ -4,9 +4,16 @@ import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from config.settings import settings_frontend
+from utils.data_loader import load_test_data
 
-""" 项目模块 """
+""" UI 项目模块 """
 
+product_data = load_test_data("ui_product.json")
+# product_params = [tuple(d.values()) for d in product_data]
+# 参数列表
+product_params = []
+for data in product_data:
+    product_params.append(tuple(data.values()))
 
 def test_product_create_button(driver, general_login, expected_success = True):
     page = ProductPage(driver)
@@ -15,9 +22,7 @@ def test_product_create_button(driver, general_login, expected_success = True):
 
     assert page.is_click_create_product_button_success() == expected_success
 
-@pytest.mark.parametrize("name, description, price, expected_success", [
-    ("Test Product2", "This is a test product.", "2", True),
-])
+@pytest.mark.parametrize("name, description, price, expected_success", product_params)
 def test_product2_function_button(driver, general_login, expected_success, name, description, price):
     page = ProductPage(driver)
     page.open()
@@ -44,7 +49,7 @@ def test_product2_function_button(driver, general_login, expected_success, name,
 
     assert page.is_access_import_JSON_page_success() == expected_success
 
-    # "实际的 products.json 路径"
+    # 上传功能的实际文件路径
     page.input(page.browse, str(settings_frontend.import_json_file))
     page.click(page.submit_import_button)
 
