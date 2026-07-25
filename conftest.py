@@ -3,6 +3,7 @@ import pytest, time
 # from api.forgetpsd_api import ForgetPsdAPI
 from core.driver_manager import DriverManager
 from utils.get_token_util import get_token
+from utils.logger import setup_logging
 # from api.user_api import UserAPI
 from pages.login_page import LoginPage
 from api.login_api import LoginAPI
@@ -10,6 +11,13 @@ from config.settings import settings_frontend
 
 
 # from api.project_api import ProjectAPI
+
+# ======
+# 初始化日志（session 最先执行）
+# ======
+@pytest.fixture(scope="session", autouse=True)
+def init_logging():
+    setup_logging()
 
 # ======
 # 全局 fixture

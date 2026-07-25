@@ -14,15 +14,16 @@ class DriverManager:
     """浏览器驱动管理：多浏览器、headless、远程 WebDriver、驱动自动管理"""
 
     @staticmethod       # 这里可以不使用静态方法，但使用静态方法可以避免实例化 DriverManager 对象，直接通过类名调用方法
-    def _create_chrome_options(headless=False):
+    # 静态方法：详见 my-files/测开/静态方法.md
+    def _create_chrome_options(headless=False):     # _开头的函数：内部调用函数，但是可以被外部调用，只是不建议，这是约定
         options = webdriver.ChromeOptions()
         if headless:
-            options.add_argument("--headless=new")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--window-size=1920,1080")
-        options.page_load_strategy = "eager"
+            options.add_argument("--headless=new")  # 新版 Chrome headless 模式，旧版是 --headless
+        options.add_argument("--disable-gpu")   # 关闭 GPU 加速，现在的新版 Chrome 已经不需要这个参数了，但为了兼容旧版，还是加上
+        options.add_argument("--no-sandbox")    # 在 Linux docker CI 中，Chrome 需要加上这个参数，否则会报错，win 一般没事
+        options.add_argument("--disable-dev-shm-usage") # Linux docker 共享内存不足时，Chrome 会崩溃，需要加上这个参数
+        options.add_argument("--start-maximized") # 启动时最大化窗口，CI建议固定窗口大小
+        options.page_load_strategy = "eager" # 页面加载策略，normal：所有图片、js、css全部加载完才继续，eager：DOM加载完直接继续，适合自动化
         return options
 
     @staticmethod
@@ -48,6 +49,7 @@ class DriverManager:
         service = ChromeService(ChromeDriverManager().install())
         options = DriverManager._create_chrome_options(headless)
         logger.info("启动 Chrome 浏览器, headless=%s", headless)
+        # 创建 Chrome 对象，service：即 driver，options：即浏览器选项
         return webdriver.Chrome(service=service, options=options)
 
     @staticmethod
@@ -79,7 +81,7 @@ class DriverManager:
 
     @staticmethod
     def get_driver(browser="chrome", headless=False, remote_url=""):
-        """统一入口：根据配置创建浏览器实例"""
+        """统一入口：根据配置创建浏览器对象"""
         if remote_url:
             return DriverManager.create_remote(remote_url, browser, headless)
 
@@ -88,8 +90,8 @@ class DriverManager:
             "firefox": DriverManager.create_firefox,
             "edge": DriverManager.create_edge,
         }
-        create_fn = drivers.get(browser)
-        if create_fn is None:
+        create_browser_obj = drivers.get(browser)
+        if create_browser_obj is None:
             logger.warning("不支持的浏览器类型: %s, 回退到 Chrome", browser)
-            create_fn = DriverManager.create_chrome
-        return create_fn(headless=headless)
+            create_browser_obj = DriverManager.create_chrome
+        return create_browser_obj(headless=headless)

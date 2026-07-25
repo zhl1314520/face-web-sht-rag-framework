@@ -83,6 +83,15 @@ class Settings:
     def remote_url(self):
         return os.environ.get("TEST_REMOTE_URL", self.common.get("remote_url", ""))
 
+    @property
+    def log_level(self):
+        return os.environ.get("TEST_LOG_LEVEL", self.common.get("log_level", "INFO")).upper()
+
+    @property
+    def log_dir(self):
+        project_root = Path(__file__).parent.parent
+        return project_root / self.common.get("log_dir", "logs")
+
 
 def get_settings(env="dev-backend"):    # 定义参数： env，默认值为 "dev-backend"
     """使用单例模式，获取配置单例，同一环境只创建一次"""
