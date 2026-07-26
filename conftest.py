@@ -1,11 +1,14 @@
+import logging
 import pytest
-
+import allure
 from core.driver_manager import DriverManager
 from utils.get_token_util import get_token
 from utils.logger import setup_logging
 from pages.login_page import LoginPage
 from api.login_api import LoginAPI
 from config.settings import settings_frontend
+
+logger = logging.getLogger(__name__)
 
 
 # ======
@@ -31,6 +34,7 @@ def driver():
     driver.delete_all_cookies()
     driver.quit()
 
+
 """
 # =====================
 # 全局慢速模式开关
@@ -42,6 +46,7 @@ def pause(seconds=1):
     if SLOW_MODE:
         time.sleep(seconds)
 """
+
 
 # ======
 # 管理 token
@@ -69,3 +74,67 @@ def logged_in_driver(driver):
 def login_api():
     """登录相关接口"""
     return LoginAPI()
+
+
+# ======
+# 失败自动截图
+# 监听每个测试用例的执行结果，如果测试失败，自动截图，并把截图挂到 Allure 报告中
+# ======
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):  # pytest 每执行一个测试，会生成一个测试报告
+    """
+    借 pytest 已经写好的生命周期和状态数据（report.when 等）
+    借 pytest 提供的 Hook 拦截点（pytest_runtest_makereport）
+    实现你自己的业务：当判断出测试失败（report.failed）且正处于核心执行阶段（report.when == "call"）时，
+    自动调用 Selenium/Playwright 的 driver 进行截图并塞进 Allure 报告里
+
+    1. pytest_runtest_makereport 是谁写的？
+        不是 Python 标准库写的，而是 pytest 框架内置的 Hook 规范（插件接口）。
+        pytest 在运行测试的各个阶段（准备、执行、清理）会主动发出这些钩子信号。
+        你写的这个函数（带 @pytest.hookimpl 装饰器）是向 pytest 注册的一个自定义插件/回调，
+        告诉 pytest：“当执行到生成报告这个步骤时，顺便执行我的这段逻辑”。
+
+    2. report.when、report.failed 等属性是哪来的？
+        这些都是 pytest 在底层运行测试时，自动计算并封装好的现成属性（属于 TestReport 对象）：
+        report.when：表示测试的当前阶段，由 pytest 自动区分：
+        "setup"：前置准备阶段（如 @pytest.fixture 初始化）
+        "call"：测试用例正文执行阶段
+        "teardown"：后置清理阶段
+        report.failed / report.passed：布尔值，pytest 自动判断当前阶段是成功还是失败。
+        report.duration(持续时间)：float 类型，pytest 自动记录该阶段消耗的时间。
+    """
+    """
+    前半段（yield 之前）：在 Pytest 官方的“生成报告”核心逻辑执行之前运行
+    yield 暂停：交出控制权，让 Pytest 去执行它原本的“生成报告”底层代码
+    后半段（yield 之后）：当 Pytest 的底层代码执行完毕后，控制权交还给你的函数，代码从 yield 的下一行继续运行
+    
+    为什么这里必须用 yield？
+        因为“截图”这个动作，必须发生在测试报告已经生成之后。如果在测试报告还没生成时就去截图，
+        或者你不知道测试到底成功还是失败，你就无法判断 report.failed 是否为 True。yield 巧妙地实现了：先让 Pytest 
+        把报告跑出来 $\rightarrow$ 你的代码通过 outcome = yield 拿到这个报告 $\rightarrow$ 检查发现
+        失败了 $\rightarrow$ 顺便拍个照存起来
+    """
+    outcome = yield
+    report = outcome.get_result()
+
+    if report.when == "call" and report.failed:
+        driver = None   # 初始化 driver 变量
+        # 从 fixture 中获取 driver
+        if "driver" in item.funcargs:   # item.funcargs 是一个字典，存储了当前测试函数的所有 fixture 参数及其值
+            driver = item.funcargs["driver"]
+        elif "logged_in_driver" in item.funcargs:
+            driver = item.funcargs["logged_in_driver"]
+
+        if driver:
+            try:
+                screenshot_dir = settings_frontend.screenshot_dir
+                screenshot_dir.mkdir(parents=True, exist_ok=True)
+                filename = f"{item.name}_{report.when}.png"
+                path = screenshot_dir / filename
+                driver.save_screenshot(str(path))
+                logger.info("测试失败截图已保存: %s", path)
+
+                # 附加到 Allure 报告
+                allure.attach.file(str(path), name=filename, attachment_type=allure.attachment_type.PNG)
+            except Exception as e:
+                logger.warning("截图失败: %s", e)

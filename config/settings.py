@@ -92,6 +92,12 @@ class Settings:
         project_root = Path(__file__).parent.parent
         return project_root / self.common.get("log_dir", "logs")
 
+    # 失败截图目录
+    @property
+    def screenshot_dir(self):
+        project_root = Path(__file__).parent.parent
+        return project_root / self.common.get("screenshot_dir", "screenshots")
+
 
 def get_settings(env="dev-backend"):    # 定义参数： env，默认值为 "dev-backend"
     """使用单例模式，获取配置单例，同一环境只创建一次"""
