@@ -17,7 +17,7 @@ def test_register(driver, input_username, input_password, input_password_confirm
     page_login.open_login()
     page_login.click_register_button()
 
-    assert page_login.is_redirect_to_register() == True
+    assert page_login.is_redirect_to_register(), "点击注册按钮后应跳转到注册页"
 
     page_register = RegisterPage(driver)
     page_register.input_username(input_username)
@@ -26,4 +26,7 @@ def test_register(driver, input_username, input_password, input_password_confirm
     page_register.click_register_page_button()
     page_register.accept_alert()
 
-    assert page_register.is_return_to_login_page() == expected_success
+    if expected_success:
+        assert page_register.is_return_to_login_page(), f"注册成功后应返回登录页, 用户名: {input_username}"
+    else:
+        assert not page_register.is_return_to_login_page(), f"注册失败后不应返回登录页, 用户名: {input_username}"

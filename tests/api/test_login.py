@@ -13,4 +13,4 @@ for data in login_data:
 @pytest.mark.parametrize("username,password,expected_status", login_params)
 def test_login(login_api, username, password, expected_status):
     result = login_api.login(username, password)
-    assert result.status_code == expected_status
+    assert result.status_code == expected_status, f"登录接口状态码期望 {expected_status}, 实际 {result.status_code}, 用户名: {username}"

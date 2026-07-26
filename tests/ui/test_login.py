@@ -18,6 +18,9 @@ def test_login(driver, input_username, input_password, expected_success):
     page.input_password(input_password)
     page.click_login_button()
 
-    assert page.is_login_successful() == expected_success
+    if expected_success:
+        assert page.is_login_successful(), f"登录应成功, 用户名: {input_username}"
+    else:
+        assert not page.is_login_successful(), f"登录应失败, 用户名: {input_username}"
 
     page.logout()
