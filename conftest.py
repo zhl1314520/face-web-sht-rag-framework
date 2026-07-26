@@ -48,6 +48,7 @@ def pause(seconds=1):
 """
 
 
+
 # ======
 # 管理 token
 # ======
@@ -74,6 +75,33 @@ def logged_in_driver(driver):
 def login_api():
     """登录相关接口"""
     return LoginAPI()
+
+
+# ======
+# 数据清理：用例执行后清理测试产生的数据
+# ======
+@pytest.fixture(scope="function")   # 函数级：每执行一个测试函数，就创建一个新的 cleanup
+def cleanup():
+    """注册清理回调，用例结束后自动执行。用法: cleanup(delete_user, user_id)"""
+    callbacks = []  # 保存测试结束后需要执行的清理动作数据
+
+    # 注册清理任务
+    """
+    如：cleanup(delete_user, 1)
+    那么callbacks = [
+        (delete_user, (1,), {})
+    ]
+    """
+    def register(callback, *args, **kwargs):
+        callbacks.append((callback, args, kwargs))  # 测试结束后调用 delete_user(1)
+
+    yield register  # 核心：进入 fixture -> callbacks[] -> yield register -> 测试函数执行 -> 测试结束 -> 继续执行 yield 下面的代码
+
+    for callback, args, kwargs in reversed(callbacks):  # reversed：倒叙执行清理，避免还有未完成的进程
+        try:
+            callback(*args, **kwargs)
+        except Exception as e:
+            logger.warning("清理回调执行失败: %s", e)
 
 
 # ======
@@ -107,7 +135,7 @@ def pytest_runtest_makereport(item, call):  # pytest 每执行一个测试，会
     前半段（yield 之前）：在 Pytest 官方的“生成报告”核心逻辑执行之前运行
     yield 暂停：交出控制权，让 Pytest 去执行它原本的“生成报告”底层代码
     后半段（yield 之后）：当 Pytest 的底层代码执行完毕后，控制权交还给你的函数，代码从 yield 的下一行继续运行
-    
+
     为什么这里必须用 yield？
         因为“截图”这个动作，必须发生在测试报告已经生成之后。如果在测试报告还没生成时就去截图，
         或者你不知道测试到底成功还是失败，你就无法判断 report.failed 是否为 True。yield 巧妙地实现了：先让 Pytest 
@@ -118,9 +146,9 @@ def pytest_runtest_makereport(item, call):  # pytest 每执行一个测试，会
     report = outcome.get_result()
 
     if report.when == "call" and report.failed:
-        driver = None   # 初始化 driver 变量
+        driver = None  # 初始化 driver 变量
         # 从 fixture 中获取 driver
-        if "driver" in item.funcargs:   # item.funcargs 是一个字典，存储了当前测试函数的所有 fixture 参数及其值
+        if "driver" in item.funcargs:  # item.funcargs 是一个字典，存储了当前测试函数的所有 fixture 参数及其值
             driver = item.funcargs["driver"]
         elif "logged_in_driver" in item.funcargs:
             driver = item.funcargs["logged_in_driver"]
