@@ -99,7 +99,7 @@ def cleanup():
 
     for callback, args, kwargs in reversed(callbacks):  # reversed：倒叙执行清理，避免还有未完成的进程
         try:
-            callback(*args, **kwargs)
+            callback(*args, **kwargs)   # *args: (1,), **kwargs: {} 解包
         except Exception as e:
             logger.warning("清理回调执行失败: %s", e)
 

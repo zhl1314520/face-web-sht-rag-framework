@@ -4,7 +4,8 @@ from utils.data_loader import load_test_data
 
 """ API 登录模块 """
 
-login_data = load_test_data("api_login.json")
+login_data = load_test_data("api_login.json")   # 获取测试数据
+# login_params = [tuple(data.values()) for data in login_data]  # 列表推导式
 login_params = []
 for data in login_data:
     login_params.append(tuple(data.values()))
