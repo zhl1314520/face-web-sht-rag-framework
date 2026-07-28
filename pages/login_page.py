@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from config.settings import settings_frontend
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
+
 logger = logging.getLogger(__name__)
 
 class LoginPage(BasePage):

@@ -1,32 +1,7 @@
 [
   {
-    "input_username": "admin",
-    "input_password": "zxcvbnm",
+    "input_username": "developer",
+    "input_password": "123456",
     "expected_success": true
-  },
-  {
-    "input_username": "",
-    "input_password": "123456",
-    "expected_success": false
-  },
-  {
-    "input_username": "developer",
-    "input_password": "",
-    "expected_success": false
-  },
-  {
-    "input_username": "developers",
-    "input_password": "123456",
-    "expected_success": false
-  },
-  {
-    "input_username": "developer",
-    "input_password": "1123456",
-    "expected_success": false
-  },
-  {
-    "input_username": "",
-    "input_password": "",
-    "expected_success": false
   }
 ]

@@ -59,8 +59,8 @@ class Settings:
 
     @property
     def test_data_dir(self):
-        project_root = Path(__file__).parent.parent
-        return project_root / self.common.get("test_data_dir", "test_data")
+        project_root = Path(__file__).parent.parent # 得到 face-web-sht-rag-framework
+        return project_root / self.common.get("test_data_dir", "test_data") # 获取测试数据目录，若无配置则设置 test_data
 
     @property
     def import_json_file(self):

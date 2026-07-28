@@ -8,7 +8,7 @@ login_data = load_test_data("ui_login.json")
 # login_params = [tuple(d.values()) for d in login_data]
 login_params = []
 for data in login_data:
-    login_params.append(tuple(data.values()))
+    login_params.append(tuple(data.values()))   # 得到("develop","123456",true),(),()...
 
 @pytest.mark.parametrize("input_username, input_password, expected_success", login_params)
 def test_login(driver, input_username, input_password, expected_success):
