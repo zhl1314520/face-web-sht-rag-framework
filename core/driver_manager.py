@@ -14,8 +14,9 @@ class DriverManager:
     """浏览器驱动管理：多浏览器、headless、远程 WebDriver、驱动自动管理"""
 
     @staticmethod       # 这里可以不使用静态方法，但使用静态方法可以避免实例化 DriverManager 对象，直接通过类名调用方法
-    # 静态方法：详见 my-files/测开/静态方法.md
-    def _create_chrome_options(headless=False):     # _开头的函数：内部调用函数，但是可以被外部调用，只是不建议，这是约定
+    # 静态方法：详见 my-files/测开/@staticmethod.md
+    # 本函数获取 chrome 选项
+    def _create_chrome_options(headless=False):     # _开头的函数：内部调用函数（模块内部私有函数），但是可以被外部调用，只是不建议，这是约定
         options = webdriver.ChromeOptions()
         if headless:
             options.add_argument("--headless=new")  # 新版 Chrome headless 模式，旧版是 --headless
@@ -46,7 +47,7 @@ class DriverManager:
 
     @staticmethod
     def create_chrome(headless=False):
-        service = ChromeService(ChromeDriverManager().install())
+        service = ChromeService(ChromeDriverManager().install())    # 创建 ChromeService 对象，ChromeDriverManager()：自动下载 Chrome 驱动
         options = DriverManager._create_chrome_options(headless)
         logger.info("启动 Chrome 浏览器, headless=%s", headless)
         # 创建 Chrome 对象，service：即 driver，options：即浏览器选项
@@ -68,7 +69,11 @@ class DriverManager:
 
     @staticmethod
     def create_remote(remote_url, browser="chrome", headless=False):
-        """连接远程 WebDriver（Selenium Grid / Docker）"""
+        """连接远程 WebDriver（Selenium Grid / Docker）
+            简单理解：A 电脑写代码，B 电脑跑用例
+                    B电脑启动 Selenium Server：java -jar selenium-server.jar standalone  ---> 192.168.1.20:4444
+                    那么：remote_url = "http://192.168.1.20:4444"
+        """
         options_map = {
             "chrome": DriverManager._create_chrome_options,
             "firefox": DriverManager._create_firefox_options,

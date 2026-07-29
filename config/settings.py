@@ -13,6 +13,37 @@ import yaml
 _config_path = Path(__file__).parent / "env.yaml"
 with open(_config_path, encoding="utf-8") as _f:
     _raw_data = yaml.safe_load(_f)      # safe_load 只能读取数据，不可以执行恶意代码
+"""
+    _raw_data:
+{
+    "dev-backend": {
+        "base_url": "http://localhost:8000"
+    },
+    "dev-frontend": {
+        "base_url": "http://localhost:8000"
+    },
+    "accounts": {
+        "admin": {
+            "username": "admin",
+            "password": "zxcvbnm"
+        },
+        "developer": {
+            "username": "developer",
+            "password": 123456
+        }
+    },
+    "common": {
+        "timeout": 10,
+        "test_data_dir": "test_data",
+        "import_json_file": "products.json",
+        "browser": "chrome",
+        "headless": False,
+        "remote_url": "",
+        "log_level": "DEBUG",
+        "log_dir": "logs"
+    }
+}
+"""
 
 
 class Settings:

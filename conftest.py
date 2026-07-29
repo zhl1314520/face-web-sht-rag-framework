@@ -20,10 +20,12 @@ def init_logging():
 
 
 # ======
-# 浏览器驱动：class 级别，每个测试类共享，类间隔离
+# 浏览器驱动：class 级别，每个测试类共享，不同测试类隔离
 # ======
 @pytest.fixture(scope="class")
 def driver():
+    # get_driver 是静态方法，DriverManager 是类
+    # @staticmethod 标记的方法是不需要创建对象调用该方法，直接使用类即可调用
     driver = DriverManager.get_driver(
         browser=settings_frontend.browser,
         headless=settings_frontend.headless,
