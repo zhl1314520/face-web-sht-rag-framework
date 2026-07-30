@@ -11,7 +11,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 logger = logging.getLogger(__name__)
 
 class LoginPage(BasePage):
-    url = settings_frontend.base_url + "/login"
+    url = settings_frontend.base_url + "/login"     # 因为 base_url 加了 @property 所以不用 settings_frontend.base_url()
 
     username_input = (By.ID, "username")
     password_input = (By.ID, "password")

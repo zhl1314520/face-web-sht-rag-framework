@@ -32,6 +32,12 @@ def driver():
         remote_url=settings_frontend.remote_url,
     )
     driver.maximize_window()
+    """
+    分为 3 个阶段
+    1. 准备阶段：执行 yield driver 之前的代码，即准备资源（setup）
+    2. 测试阶段：yield driver：把 driver 交给测试函数使用，然后暂停这里，直到测试阶段结束
+    3. 清理阶段：即 teardown 阶段，测试阶段结束后执行 yield driver 后面的代码，释放资源
+    """
     yield driver
     driver.delete_all_cookies()
     driver.quit()
