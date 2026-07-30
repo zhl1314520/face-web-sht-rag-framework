@@ -51,28 +51,28 @@ class Settings:
 
     _instances = {} # 单例对象存储的字典，key:env，value:Settings 对象
 
-    def __init__(self, env="dev"):      # 构造函数（初始化方法）：创建 Settings 对象自动执行
+    def __init__(self, env="dev-frontend"):      # 构造函数（初始化方法）：创建 Settings 对象自动执行
         self._env = env
-        self.config = _raw_data.get(env, {})    # env 配置
-        self.accounts = _raw_data.get("accounts", {})   # accounts 配置
+        self.config = _raw_data.get(env, {})    # env.yaml 配置
+        self.accounts = _raw_data.get("accounts", {})   # yaml 内部 accounts 配置
         self.common = _raw_data.get("common", {})
 
     @property # 作用：调用函数时不需要加括号，直接用属性的方式访问，如 settings.base_url，而不是 settings.base_url()
     def base_url(self):
         # 环境变量优先，便于 CI/CD 中动态指定
-        return os.environ.get("TEST_BASE_URL", self.config.get("base_url", ""))
+        return os.environ.get("TEST_BASE_URL", self.config.get("base_url", "")) # base_url 值优先级: 环境变量 > yaml 配置 > 默认值(空字符)
 
     @property
     def username(self):
-        # 优先从环境变量读取，便于 CI/CD 注入；否则读取 accounts.admin 配置, 如果都没有则返回空字符串
+        # 优先从环境变量读取，便于 CI/CD 注入；否则读取 accounts.developer 配置, 如果都没有则返回空字符串
         # TEST_USERNAME: 环境变量名
-        return os.environ.get("TEST_USERNAME", self.accounts.get("admin", {}).get("username", ""))
+        return os.environ.get("TEST_USERNAME", self.accounts.get("developer", {}).get("username", ""))
 
     @property
     def password(self):
-        return os.environ.get("TEST_PASSWORD", self.accounts.get("admin", {}).get("password", ""))
+        return os.environ.get("TEST_PASSWORD", self.accounts.get("developer", {}).get("password", ""))
 
-    def get_account(self, role="admin"):
+    def get_account(self, role="developer"):
         """按角色获取账号信息，如 settings.get_account('developer')"""
         account = self.accounts.get(role, {})
         return {
@@ -95,7 +95,7 @@ class Settings:
 
     @property
     def import_json_file(self):
-        return self.test_data_dir / self.common.get("import_json_file", "products.json")
+        return self.test_data_dir / self.common.get("import_json_file", "imported_file.json")
 
     @property
     def browser(self):
@@ -115,9 +115,10 @@ class Settings:
         return os.environ.get("TEST_REMOTE_URL", self.common.get("remote_url", ""))
 
     @property
-    def log_level(self):
+    def log_level(self):    # DEBUG 日志层级
         return os.environ.get("TEST_LOG_LEVEL", self.common.get("log_level", "INFO")).upper()
 
+    # 存放日志目录
     @property
     def log_dir(self):
         project_root = Path(__file__).parent.parent
@@ -130,10 +131,11 @@ class Settings:
         return project_root / self.common.get("screenshot_dir", "screenshots")
 
 
-def get_settings(env="dev-backend"):    # 定义参数： env，默认值为 "dev-backend"
+def get_settings(env="dev-frontend"):    # 定义参数： env，默认值为 "dev-backend"
     """使用单例模式，获取配置单例，同一环境只创建一次"""
     if env not in Settings._instances:
-        Settings._instances[env] = Settings(env)    # 结果： _instances 里面存了 dev-backend 对象地址
+        # _instances[env] == _instances["dev-frontend"], 若定义 env = "dev-backend"，那么字典 中没有 dev-backend 对象，则创建对象，并赋值给字典
+        Settings._instances[env] = Settings(env)    # 结果： _instances 里面存了 dev-frontend 对象地址
 
     return Settings._instances[env]
 
