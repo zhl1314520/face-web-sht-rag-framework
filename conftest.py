@@ -8,7 +8,7 @@ from pages.login_page import LoginPage
 from api.login_api import LoginAPI
 from config.settings import settings_frontend
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)    # 创建 logger 实例
 
 
 # ======
@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 # ======
 @pytest.fixture(scope="session", autouse=True)
 def init_logging():
+    """仅仅是初始化配置，没有创建logger实例，要想使用log，必须创建实例"""
     setup_logging()
 
 

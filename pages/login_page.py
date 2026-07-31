@@ -40,7 +40,7 @@ class LoginPage(BasePage):
     def logout(self):
         try:
             self.click(self.logout_button)      # 点击登出
-            WebDriverWait(self.driver, 5).until(
+            WebDriverWait(self.driver, 5).until(    # 假设 10 条数据中有 8 条预期失败 ，每条失败后 logout 都会白白等待 5 秒超时，总共浪费 40 秒，优化见：test_login.py
                 EC.presence_of_element_located((By.ID, "username"))     # 判定登出：显示登录页面的 username 框
             )
         except (TimeoutException, NoSuchElementException) as e:

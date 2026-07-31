@@ -22,10 +22,10 @@ def setup_logging(level=None, log_dir=None):
         else:
             使用配置文件
     """
-    level = level or settings_frontend.log_level
+    level = level or settings_frontend.log_level     # 若 level = None，则 setting_frontend.log_level 会被使用, 反之 level = level
     log_dir = log_dir or settings_frontend.log_dir
 
-    log_level = getattr(logging, level, logging.INFO)   # 反射获取日志级别
+    log_level = getattr(logging, level, logging.INFO)   # 反射获取日志级别， logging.INFO: 代表一个整数，如 INFO 底层是一个值：20
 
     # 根 logger 配置
     root_logger = logging.getLogger()
@@ -44,7 +44,7 @@ def setup_logging(level=None, log_dir=None):
     root_logger.addHandler(console_handler)
 
     # 文件 handler
-    log_dir.mkdir(parents=True, exist_ok=True)  # 不存在的目录就创建
+    log_dir.mkdir(parents=True, exist_ok=True)  # 不存在的目录就创建，parents 就是 mkdir -p 参数
     log_file = log_dir / f"test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log" # logs/test_20260725_152030.log
     file_handler = logging.FileHandler(log_file, encoding="utf-8")
     file_handler.setLevel(log_level)
@@ -52,9 +52,3 @@ def setup_logging(level=None, log_dir=None):
     root_logger.addHandler(file_handler)
 
     _initialized = True
-
-
-def get_logger(name):
-    """获取 logger，确保全局配置已初始化"""
-    setup_logging()
-    return logging.getLogger(name)
