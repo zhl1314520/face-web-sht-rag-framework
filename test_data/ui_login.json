@@ -3,5 +3,50 @@
     "input_username": "developer",
     "input_password": "123456",
     "expected_success": true
+  },
+  {
+    "input_username": "developer",
+    "input_password": "111111",
+    "expected_success": false
+  },
+  {
+    "input_username": "developer111",
+    "input_password": "123456",
+    "expected_success": false
+  },
+  {
+    "input_username": "developer",
+    "input_password": "",
+    "expected_success": false
+  },
+  {
+    "input_username": "",
+    "input_password": "123456",
+    "expected_success": false
+  },
+  {
+    "input_username": "admin",
+    "input_password": "zxcvbnm",
+    "expected_success": true
+  },
+  {
+    "input_username": "admin",
+    "input_password": "123123",
+    "expected_success": false
+  },
+  {
+    "input_username": "admin111",
+    "input_password": "zxcvbnm",
+    "expected_success": false
+  },
+  {
+    "input_username": "admin",
+    "input_password": "",
+    "expected_success": false
+  },
+  {
+    "input_username": "",
+    "input_password": "zxcvbnm",
+    "expected_success": false
   }
 ]

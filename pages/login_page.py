@@ -39,9 +39,9 @@ class LoginPage(BasePage):
 
     def logout(self):
         try:
-            self.click(self.logout_button)
+            self.click(self.logout_button)      # 点击登出
             WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.ID, "username"))
+                EC.presence_of_element_located((By.ID, "username"))     # 判定登出：显示登录页面的 username 框
             )
         except (TimeoutException, NoSuchElementException) as e:
             logger.warning(f"退出登录异常: {e}")
