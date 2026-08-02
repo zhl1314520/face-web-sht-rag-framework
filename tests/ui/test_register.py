@@ -26,6 +26,6 @@ def test_register(driver, input_username, input_password, input_password_confirm
     page.accept_alert()
 
     if expected_success:
-        assert page.is_return_to_login_page(), f"注册成功后应返回登录页, 用户名: {input_username}"
+        assert (page.is_return_to_login_page() and page.is_display_success_text()), f"注册成功后应返回登录页 and 显示成功信息, 用户名: {input_username}"
     else:
-        assert not page.is_return_to_login_page(), f"注册失败后不应返回登录页, 用户名: {input_username}"
+        assert not (page.is_return_to_login_page() or page.is_display_success_text()), f"注册失败(未返回登录页 or 未显示成功信息), 用户名: {input_username}"

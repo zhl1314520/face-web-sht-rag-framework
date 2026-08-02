@@ -1,3 +1,5 @@
+from operator import contains
+
 from core.base_page import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,6 +16,9 @@ class RegisterPage(BasePage):
     password_input = (By.ID, "id_password1")
     password_confirm_input = (By.ID, "id_password2")
     register_button_create = (By.XPATH, "//button[@type='submit']")
+    is_display_Success = (By.XPATH, "//div[contains(@role, 'alert')]")
+    # 或者双定位
+    # is_display_Success = (By.XPATH, "//div[contains(@class, 'alert-success') and contains(@role, 'alert')]")
 
     def open_login(self):
         self.driver.get(self.login_url)
@@ -42,7 +47,8 @@ class RegisterPage(BasePage):
     def click_register_page_button(self):
         self.click(self.register_button_create)
 
-    # 判断是否注册成功
+    # 判断是否注册成功(两个条件)
+    # 条件 1
     def is_return_to_login_page(self):
         try:
             WebDriverWait(self.driver, 10).until(
@@ -50,4 +56,15 @@ class RegisterPage(BasePage):
             )
             return True
         except (TimeoutException, NoSuchElementException):
+            return False
+
+    # 条件 2
+    def is_display_success_text(self):
+        try:
+            WebDriverWait(self.driver, 0).until(
+                EC.text_to_be_present_in_element(self.is_display_Success, "Success! Account created successfully for")
+            )
+            return True
+        # 一般 text_to_be_present_in_element 不会抛出 NoSuchElementException
+        except (TimeoutException):
             return False
