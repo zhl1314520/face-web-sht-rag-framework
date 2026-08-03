@@ -83,7 +83,7 @@ def logged_in_driver(driver):
 @pytest.fixture
 def login_api():
     """登录相关接口"""
-    return LoginAPI()
+    return LoginAPI()   # 返回 LoginAPI 对象
 
 
 # ======

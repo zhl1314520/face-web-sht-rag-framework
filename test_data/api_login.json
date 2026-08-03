@@ -1,17 +1,32 @@
 [
   {
-    "username": "admin",
-    "password": "zxcvbnm",
+    "username": "developer",
+    "password": "123456",
     "expected_status": 302
   },
   {
-    "username": "17263937422@163.com",
+    "username": "developer",
+    "password": "123123",
+    "expected_status": 200
+  },
+  {
+    "username": "developer111",
+    "password": "123456",
+    "expected_status": 200
+  },
+  {
+    "username": "developer",
     "password": "",
     "expected_status": 200
   },
   {
     "username": "",
     "password": "123456",
+    "expected_status": 200
+  },
+  {
+    "username": "",
+    "password": "",
     "expected_status": 200
   }
 ]
