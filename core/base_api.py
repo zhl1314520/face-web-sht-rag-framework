@@ -34,7 +34,8 @@ class BaseAPI:
         2. resp = http_method("https://api.com/users", json={"name": "Alice"})
         """
         self._log_response(resp)
-        return ApiResponse(resp)
+        APIResp = ApiResponse(resp)     # 将 resp 作为构造函数（__init__）的参数传入
+        return APIResp
 
     def get(self, url, **kwargs):
         return self._request("get", url, **kwargs)

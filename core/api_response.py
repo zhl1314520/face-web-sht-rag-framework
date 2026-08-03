@@ -17,9 +17,9 @@ class ApiResponse:
         return self._response.status_code
 
     @property
-    def ok(self):
+    def status_code_2xx(self):
         """HTTP 状态码是否为 2xx"""
-        return self._response.ok
+        return self._response.status_code_2xx
 
     @property
     def text(self):
@@ -52,7 +52,7 @@ class ApiResponse:
             raise AssertionError(
                 msg or f"状态码期望 {expected}, 实际 {self.status_code}, 响应: {self.text[:200]}"
             )
-        return self
+        # return self     # 返回 self，使得方法可链式调用。但是不方便 debug，最好使用普通的断言，其实保留”return self“也不影响普通调用
     """
     在这段代码中，return self 的核心作用是实现 方法链式调用（Method Chaining）。
 
@@ -76,13 +76,14 @@ api.get_user().assert_status_code(200).assert_json_key("name")
 在接口自动化测试中（比如封装 Response 响应对象时），链式调用能让测试脚本写起来非常流畅、像写英语句子一样，极大地减少了代码冗余。
     """
 
+    # 方法默认 2xx 都是成功，不具有普适性
     def assert_ok(self, msg=""):
         """断言 2xx"""
-        if not self.ok:
+        if not self.status_code_2xx:
             raise AssertionError(
                 msg or f"请求失败, 状态码 {self.status_code}, 响应: {self.text[:200]}"
             )
-        return self
+        # return self
 
     # 获取响应对象字符串表示 toString()
     def __repr__(self):
