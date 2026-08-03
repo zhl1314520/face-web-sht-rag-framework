@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class DriverManager:
-    """浏览器驱动管理：多浏览器、headless、远程 WebDriver、驱动自动管理"""
+    """浏览器驱动管理：多浏览器、headless、保存密码弹窗、远程 WebDriver、驱动自动管理"""
 
     @staticmethod       # 这里可以不使用静态方法，但使用静态方法可以避免实例化 DriverManager 对象，直接通过类名调用方法
     # 静态方法：详见 my-files/测开/@staticmethod.md
@@ -25,6 +25,17 @@ class DriverManager:
         options.add_argument("--disable-dev-shm-usage") # Linux docker 共享内存不足时，Chrome 会崩溃，需要加上这个参数
         options.add_argument("--start-maximized") # 启动时最大化窗口，CI建议固定窗口大小
         options.page_load_strategy = "eager" # 页面加载策略，normal：所有图片、js、css全部加载完才继续，eager：DOM加载完直接继续，适合自动化
+
+        # 禁用弹出密码保存弹窗
+        preferences = {
+            "credentials_enable_service": False,
+            "profile.password_manager_enabled": False,
+            "profile.password_manager_leak_detection": False    # 禁止弹出密码泄露
+        }
+        options.add_experimental_option(
+            "prefs",
+            preferences
+        )
         return options
 
     @staticmethod

@@ -1,8 +1,38 @@
 [
   {
-    "input_username": "username100000001",
-    "input_password": "username100000001",
-    "input_password_confirm": "username1000000011",
+    "input_username": "username1",
+    "input_password": "username1",
+    "input_password_confirm": "username1",
+    "expected_success": true
+  },
+  {
+    "input_username": "username2",
+    "input_password": "username02",
+    "input_password_confirm": "username2",
+    "expected_success": false
+  },
+  {
+    "input_username": "username3",
+    "input_password": "username3",
+    "input_password_confirm": "username03",
+    "expected_success": false
+  },
+  {
+    "input_username": "",
+    "input_password": "username4",
+    "input_password_confirm": "username4",
+    "expected_success": false
+  },
+  {
+    "input_username": "username5",
+    "input_password": "",
+    "input_password_confirm": "username5",
+    "expected_success": false
+  },
+  {
+    "input_username": "username6",
+    "input_password": "username6",
+    "input_password_confirm": "",
     "expected_success": false
   }
 ]
