@@ -8,13 +8,13 @@ class ApiResponse:
         self._response = response   # _response：实例（instance）属性，只要实例存在，则该属性也一定存在，这是内部属性，请尽量不要在类的外部直接访问或修改它
 
     @property
-    def status_code(self):
+    def actually_status_code(self):
         """
         由于：self._response = response 中 response 是一个对象，可以使用 self._response.status_code，例如：self 是一个”人“对象
         _response：是人的“身高”属性，同时身高属性本身也是一个对象，包含180和cm两个属性，那么 self._response.status_code 就可以表示 180 或者 cm
         但是：上面的只能对于对象有效，对于字典等类型不适合
         """
-        return self._response.status_code
+        return self._response.actually_status_code   # 实际返回的状态码
 
     @property
     def status_code_2xx(self):
@@ -46,12 +46,14 @@ class ApiResponse:
     def url(self):
         return self._response.url
 
-    def assert_status_code(self, expected, msg=""):
+    def assert_status_code(self, expected_status_code, msg=""):
         """断言状态码，失败时抛出带上下文信息的 AssertionError"""
-        if self.status_code != expected:
+        if self.actually_status_code != expected_status_code:
             raise AssertionError(
-                msg or f"状态码期望 {expected}, 实际 {self.status_code}, 响应: {self.text[:200]}"
+                msg or f"状态码期望 {expected_status_code}, 实际 {self.actually_status_code}, 响应: {self.text[:200]}"
             )
+        # else:
+        #     该用例 PASSED
         # return self     # 返回 self，使得方法可链式调用。但是不方便 debug，最好使用普通的断言，其实保留”return self“也不影响普通调用
     """
     在这段代码中，return self 的核心作用是实现 方法链式调用（Method Chaining）。
@@ -81,10 +83,10 @@ api.get_user().assert_status_code(200).assert_json_key("name")
         """断言 2xx"""
         if not self.status_code_2xx:
             raise AssertionError(
-                msg or f"请求失败, 状态码 {self.status_code}, 响应: {self.text[:200]}"
+                msg or f"请求失败, 状态码 {self.actually_status_code}, 响应: {self.text[:200]}"
             )
         # return self
 
     # 获取响应对象字符串表示 toString()
     def __repr__(self):
-        return f"<ApiResponse [{self.status_code}] {self.url}>"
+        return f"<ApiResponse [{self.actually_status_code}] {self.url}>"

@@ -10,7 +10,7 @@ login_params = []
 for data in login_data:
     login_params.append(tuple(data.values()))
 
-@pytest.mark.parametrize("username,password,expected_status", login_params)
-def test_login(login_api, username, password, expected_status):
+@pytest.mark.parametrize("username,password,expected_status_code", login_params)
+def test_login(login_api, username, password, expected_status_code):
     result = login_api.login(username, password)
-    result.assert_status_code(expected_status, f"登录接口状态码错误, 用户名: {username}")
+    result.assert_status_code(expected_status_code, f"登录接口状态码错误, 用户名: {username}")
