@@ -13,7 +13,7 @@ class BaseAPI:
         logger.info("%s %s | 参数: %s", method, url, kwargs)
 
     def _log_response(self, resp):  # 参数：resp 是一个对象，包含常见的响应属性
-        logger.info("响应: %s | %s", resp.actually_status_code, resp.text[:500])   # 输出[0,500) 字符日志
+        logger.info("响应: %s | %s", resp.status_code, resp.text[:500])   # 输出[0,500) 字符日志
 
     def _request(self, method, url, **kwargs):
         """统一请求入口，返回 ApiResponse"""

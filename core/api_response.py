@@ -14,7 +14,7 @@ class ApiResponse:
         _response：是人的“身高”属性，同时身高属性本身也是一个对象，包含180和cm两个属性，那么 self._response.status_code 就可以表示 180 或者 cm
         但是：上面的只能对于对象有效，对于字典等类型不适合
         """
-        return self._response.actually_status_code   # 实际返回的状态码
+        return self._response.status_code   # 实际返回的状态码
 
     @property
     def status_code_2xx(self):

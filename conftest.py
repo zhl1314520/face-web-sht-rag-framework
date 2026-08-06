@@ -155,6 +155,8 @@ def pytest_runtest_makereport(item, call):  # pytest 每执行一个测试，会
     report = outcome.get_result()
 
     if report.when == "call" and report.failed:
+        # 失败用例写入日志
+        logger.error("用例失败: %s\n%s", item.nodeid, report.longreprtext)
         driver = None  # 初始化 driver 变量
         # 从 fixture 中获取 driver
         if "driver" in item.funcargs:  # item.funcargs 是一个字典，存储了当前测试函数的所有 fixture 参数及其值
