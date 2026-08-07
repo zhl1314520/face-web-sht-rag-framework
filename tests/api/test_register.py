@@ -16,6 +16,7 @@ for data in register_data:
         values[0] = values[0] + _ensure_unique_username        # 用户名追加唯一后缀
     register_params.append(tuple(values))
 
+# 后续登录的 username 只能是 username + 时间戳 + 随机数，才能登录成功
 @pytest.mark.parametrize("username,password1,password2, expected_status_code", register_params)
 def test_register(register_api, username, password1, password2, expected_status_code):
     result = register_api.register(username, password1, password2)
