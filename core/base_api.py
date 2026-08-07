@@ -1,6 +1,7 @@
 import logging
 import requests
 from core.api_response import ApiResponse
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -8,6 +9,23 @@ logger = logging.getLogger(__name__)
 class BaseAPI:
     def __init__(self):     # 所有 self 都表示 BaseAPI 的对象，如：api = BaseAPI()，则 api = self，self.session = api.session
         self.session = requests.Session()  # session 对象管理：复用 TCP 连接（更快）、自动带 cookie（登录态）、可以统一加 headers（token）
+
+    # 对于 POST/PUT/DELETE 等请求，通常需要先获取 CSRF Token 才能成功请求，如 api/test_register.py 中的 test_register
+    def _ensure_csrf_token(self, url):
+        """先 GET 页面获取 CSRF Token，设置到 session header 和 cookie 中"""
+        if "X-CSRFToken" in self.session.headers:
+            return  # 已有 token，跳过
+        resp = self.session.get(url)
+        # 从 cookie 中获取 csrftoken（Django 默认设置）
+        csrf_token = self.session.cookies.get("csrftoken")
+        if not csrf_token:
+            # 兜底：从响应 HTML 中提取
+            match = re.search(r'name="csrfmiddlewaretoken"\s+value="([^"]+)"', resp.text)
+            if match:
+                csrf_token = match.group(1)
+        if csrf_token:
+            self.session.headers["X-CSRFToken"] = csrf_token
+            logger.info("CSRF Token 已获取: %s", csrf_token[:8] + "...")
 
     def _log_request(self, method, url, **kwargs):  # **kwargs: 允许传入任意类型参数
         logger.info("%s %s | 参数: %s", method, url, kwargs)
@@ -17,6 +35,9 @@ class BaseAPI:
 
     def _request(self, method, url, **kwargs):
         """统一请求入口，返回 ApiResponse"""
+        # 仅当调用方显式要求 CSRF 时才获取，避免对不需要 CSRF 的接口（如 login）产生多余 GET 请求
+        if kwargs.pop("need_csrf", False) and method.lower() in ("post", "put", "delete", "patch"):
+            self._ensure_csrf_token(url)
         self._log_request(method, url, **kwargs)
         resp = getattr(self.session, method)(url, **kwargs) # getattr: 反射：动态调用，一个（）负责”找方法“，一个负责”执行方法“
         """

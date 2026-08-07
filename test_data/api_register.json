@@ -1,0 +1,50 @@
+[
+  {
+    "username": "developer001",
+    "password1": "123456",
+    "password2": "123456",
+    "expected_status_code": 302
+  },
+  {
+    "username": "developer002",
+    "password1": "123456",
+    "password2": "123456",
+    "expected_status_code": 302
+  },
+  {
+    "username": "developer003",
+    "password1": "123456",
+    "password2": "123456",
+    "expected_status_code": 302
+  },
+  {
+    "username": "",
+    "password1": "123456",
+    "password2": "123456",
+    "expected_status_code": 200
+  },
+  {
+    "username": "developer004",
+    "password1": "",
+    "password2": "123456",
+    "expected_status_code": 200
+  },
+  {
+    "username": "developer005",
+    "password1": "123456",
+    "password2": "",
+    "expected_status_code": 200
+  },
+  {
+    "username": "developer006",
+    "password1": "123456",
+    "password2": "000000",
+    "expected_status_code": 200
+  },
+  {
+    "username": "developer007",
+    "password1": "",
+    "password2": "",
+    "expected_status_code": 200
+  }
+]

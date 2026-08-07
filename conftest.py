@@ -7,6 +7,7 @@ from utils.logger import setup_logging
 from pages.login_page import LoginPage
 from api.login_api import LoginAPI
 from config.settings import settings_frontend
+from api.register_api import RegisterAPI
 
 logger = logging.getLogger(__name__)    # 创建 logger 实例
 
@@ -84,6 +85,11 @@ def logged_in_driver(driver):
 def login_api():
     """登录相关接口"""
     return LoginAPI()   # 返回 LoginAPI 对象
+
+@pytest.fixture
+def register_api():
+    """注册相关接口"""
+    return RegisterAPI()
 
 
 # ======
