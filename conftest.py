@@ -9,13 +9,26 @@ from api.login_api import LoginAPI
 from config.settings import settings_frontend
 from api.register_api import RegisterAPI
 
+"""
+问题：
+    为什么都调用了底层的 logging 还要自己写个 logger.py 工具函数
+解答：
+    1. logging 是 Python 标准库，默认没有格式（输出是裸文本）、级别是 WARNING，而（INFO、DEBUG会被丢弃），只输出到控制台，没有输出到文件
+    2. 工具函数 logger.py 所有 logger 自动带格式、同时输出到控制台和文件、级别受控
+
+logging.getLogger()          ← 根 logger（所有 logger 的父节点）
+  ├── setLevel(INFO)         ← 设置全局级别
+  ├── addHandler(控制台)     ← 加控制台输出 + 格式
+  └── addHandler(文件)       ← 加文件输出 + 格式
+"""
 logger = logging.getLogger(__name__)    # 创建 logger 实例
 
 
 # ======
-# 初始化日志（session 最先执行）
+# 初始化日志（session 最先执行，范围最大）  scope ：session > module > class > function
+# 无论是哪个测试类、哪个测试函数，都会先执行这个 fixture
 # ======
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session", autouse=True)  # scope="session", autouse=True：整个测试会话只执行一次，最先执行，自动执行
 def init_logging():
     """仅仅是初始化配置，没有创建logger实例，要想使用log，必须创建实例"""
     setup_logging()
@@ -95,35 +108,35 @@ def register_api():
 # ======
 # 数据清理：用例执行后清理测试产生的数据，不是所有的数据都要清理，只有那些会影响后续测试的数据（或指定的数据）才需要清理，所以没有设计为”autouse = true“
 # ======
-@pytest.fixture(scope="function")   # 函数级：每执行一个测试函数，就创建一个新的 cleanup
-def cleanup():
-    """注册清理回调，用例结束后自动执行。用法: cleanup(delete_user, user_id)"""
-    callbacks = []  # 保存测试结束后需要执行的清理动作数据
-
-    # 注册清理任务
-    """
-    如：cleanup(delete_user, 1)
-    那么callbacks = [
-        (delete_user, (1,), {})
-    ]
-    """
-    def add_cleanup(callback, *args, **kwargs):
-        callbacks.append((callback, args, kwargs))  # 测试结束后调用 delete_user(1)
-
-    yield add_cleanup  # 核心：进入 fixture -> callbacks[] -> yield register -> 测试函数执行 -> 测试结束 -> 继续执行 yield 下面的代码
-
-    for callback, args, kwargs in reversed(callbacks):  # reversed：倒叙执行清理，避免还有未完成的进程
-        try:
-            callback(*args, **kwargs)   # *args: (1,), **kwargs: {} 解包
-        except Exception as e:
-            logger.warning("清理回调执行失败: %s", e)
+# @pytest.fixture(scope="function")   # 函数级：每执行一个测试函数，就创建一个新的 cleanup
+# def cleanup():
+#     """注册清理回调，用例结束后自动执行。用法: cleanup(delete_user, user_id)"""
+#     callbacks = []  # 保存测试结束后需要执行的清理动作数据
+#
+#     # 注册清理任务
+#     """
+#     如：cleanup(delete_user, 1)
+#     那么callbacks = [
+#         (delete_user, (1,), {})
+#     ]
+#     """
+#     def add_cleanup(callback, *args, **kwargs):
+#         callbacks.append((callback, args, kwargs))  # 测试结束后调用 delete_user(1)
+#
+#     yield add_cleanup  # 核心：进入 fixture -> callbacks[] -> yield register -> 测试函数执行 -> 测试结束 -> 继续执行 yield 下面的代码
+#
+#     for callback, args, kwargs in reversed(callbacks):  # reversed：倒叙执行清理，避免还有未完成的进程
+#         try:
+#             callback(*args, **kwargs)   # *args: (1,), **kwargs: {} 解包
+#         except Exception as e:
+#             logger.warning("清理回调执行失败: %s", e)
 
 
 # ======
 # 失败自动截图
 # 监听每个测试用例的执行结果，如果测试失败，自动截图，并把截图挂到 Allure 报告中
 # ======
-@pytest.hookimpl(hookwrapper=True)
+@pytest.hookimpl(hookwrapper=True)  # hookwrapper 是一个 hook，wrapper 器，底层逻辑：1. 执行完测试用例后，继续处理测试结果，2. 处理测试结果时，继续处理截图逻辑
 def pytest_runtest_makereport(item, call):  # pytest 每执行一个测试，会生成一个测试报告
     """
     借 pytest 已经写好的生命周期和状态数据（report.when 等）
@@ -145,8 +158,9 @@ def pytest_runtest_makereport(item, call):  # pytest 每执行一个测试，会
         "teardown"：后置清理阶段
         report.failed / report.passed：布尔值，pytest 自动判断当前阶段是成功还是失败。
         report.duration(持续时间)：float 类型，pytest 自动记录该阶段消耗的时间。
-    """
-    """
+        report.nodeid：字符串，pytest 自动生成的测试用例唯一标识（包含模块名、类名、函数名等）
+        report.longreprtext：字符串，pytest 自动生成的失败信息（包含断言失败的堆栈、异常类型、异常信息等）
+
     前半段（yield 之前）：在 Pytest 官方的“生成报告”核心逻辑执行之前运行
     yield 暂停：交出控制权，让 Pytest 去执行它原本的“生成报告”底层代码
     后半段（yield 之后）：当 Pytest 的底层代码执行完毕后，控制权交还给你的函数，代码从 yield 的下一行继续运行
@@ -157,8 +171,8 @@ def pytest_runtest_makereport(item, call):  # pytest 每执行一个测试，会
         把报告跑出来 $\rightarrow$ 你的代码通过 outcome = yield 拿到这个报告 $\rightarrow$ 检查发现
         失败了 $\rightarrow$ 顺便拍个照存起来
     """
-    outcome = yield
-    report = outcome.get_result()
+    execute_results = yield # 先让 pytest 执行完测试用例，生成报告，然后将结果报告交给 execute_results
+    report = execute_results.get_result()
 
     if report.when == "call" and report.failed:
         # 失败用例写入日志
@@ -167,7 +181,7 @@ def pytest_runtest_makereport(item, call):  # pytest 每执行一个测试，会
         # 从 fixture 中获取 driver
         if "driver" in item.funcargs:  # item.funcargs 是一个字典，存储了当前测试函数的所有 fixture 参数及其值
             driver = item.funcargs["driver"]
-        elif "logged_in_driver" in item.funcargs:
+        elif "logged_in_driver" in item.funcargs:   # logged_in_driver 在上文中是个函数（提供登录过的 driver）
             driver = item.funcargs["logged_in_driver"]
 
         if driver:
