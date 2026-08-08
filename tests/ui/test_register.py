@@ -1,15 +1,21 @@
+import random
 import pytest
-
 from pages.register_page import RegisterPage
 from utils.data_loader import load_test_data
+import time
 
 """ 注册模块 """
 
 register_data = load_test_data("ui_register.json")
 # register_params = [tuple(d.values()) for d in register_data]
+_ensure_unique_username = time.strftime("%m%d%H%M%S") + str(random.randint(10, 99))
 register_params = []
 for data in register_data:
-    register_params.append(tuple(data.values()))
+    values = list(data.values())
+    if data["expected_success"]:    # 值为 True
+        values[0] = values[0] + _ensure_unique_username  # 用户名追加唯一后缀
+    register_params.append(tuple(values))
+
 
 @pytest.mark.parametrize("input_username, input_password, input_password_confirm, expected_success", register_params)
 def test_register(driver, input_username, input_password, input_password_confirm, expected_success):

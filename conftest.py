@@ -93,7 +93,7 @@ def register_api():
 
 
 # ======
-# 数据清理：用例执行后清理测试产生的数据
+# 数据清理：用例执行后清理测试产生的数据，不是所有的数据都要清理，只有那些会影响后续测试的数据（或指定的数据）才需要清理，所以没有设计为”autouse = true“
 # ======
 @pytest.fixture(scope="function")   # 函数级：每执行一个测试函数，就创建一个新的 cleanup
 def cleanup():
@@ -107,10 +107,10 @@ def cleanup():
         (delete_user, (1,), {})
     ]
     """
-    def register(callback, *args, **kwargs):
+    def add_cleanup(callback, *args, **kwargs):
         callbacks.append((callback, args, kwargs))  # 测试结束后调用 delete_user(1)
 
-    yield register  # 核心：进入 fixture -> callbacks[] -> yield register -> 测试函数执行 -> 测试结束 -> 继续执行 yield 下面的代码
+    yield add_cleanup  # 核心：进入 fixture -> callbacks[] -> yield register -> 测试函数执行 -> 测试结束 -> 继续执行 yield 下面的代码
 
     for callback, args, kwargs in reversed(callbacks):  # reversed：倒叙执行清理，避免还有未完成的进程
         try:
