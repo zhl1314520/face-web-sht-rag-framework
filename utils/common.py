@@ -44,9 +44,9 @@ def sha256(text):
 # ======
 # 时间处理
 # ======
-def timestamp():
-    """返回当前时间戳（秒）"""
-    return int(time.time())
+# def timestamp():
+#     """返回当前时间戳（秒）"""
+#     return int(time.time())
 
 
 def datetime_str(fmt="%Y-%m-%d %H:%M:%S"):

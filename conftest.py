@@ -2,7 +2,7 @@ import logging
 import pytest
 import allure
 from core.driver_manager import DriverManager
-from utils.get_token_util import get_token
+from utils.get_token_util import get_login_session
 from utils.logger import setup_logging
 from pages.login_page import LoginPage
 from api.login_api import LoginAPI
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)    # 创建 logger 实例
 
 
 # ======
-# 初始化日志（session 最先执行，范围最大）  scope ：session > module > class > function
+# 初始化日志（session 最先执行，范围最大, 全局只执行 1 次）  scope ：session > module > class > function
 # 无论是哪个测试类、哪个测试函数，都会先执行这个 fixture
 # ======
 @pytest.fixture(scope="session", autouse=True)  # scope="session", autouse=True：整个测试会话只执行一次，最先执行，自动执行
@@ -76,9 +76,9 @@ def pause(seconds=1):
 # 管理 token
 # ======
 @pytest.fixture(scope="session")
-def auth_token():
+def auth_token():   # 登录的 session 对象
     """全局 session，整个测试会话只获取一次"""
-    return get_token()
+    return get_login_session()
 
 
 # ======

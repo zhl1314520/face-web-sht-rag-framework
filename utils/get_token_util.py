@@ -2,9 +2,10 @@ import requests
 from config.settings import settings_backend
 
 
-def get_token():
+def get_login_session():
+    """返回带登录态的 session 对象"""
     session = requests.Session()
-    login_response = session.post(
+    session.post(
         settings_backend.base_url + "/login",
         data={
             "username": settings_backend.username,
