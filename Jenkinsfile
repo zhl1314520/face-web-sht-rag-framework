@@ -40,24 +40,6 @@ pipeline {  // pipeline：声明流水线
     }
 
     stages {        // stages：声明流水线的阶段
-        // 测试本地环境能不能跑起来，打印一些环境信息
-        stage('Check Environment') {
-            steps {
-                powershell '''
-                    Write-Host "=== OS ==="
-                    Write-Host $env:OS
-
-                    Write-Host "=== Computer ==="
-                    Write-Host $env:COMPUTERNAME
-
-                    Write-Host "=== PowerShell ==="
-                    $PSVersionTable.PSVersion
-
-                    Write-Host "=== Python ==="
-                    python --version
-                '''
-            }
-        }
         // 从仓库拉代码
         stage('Checkout') {
             steps {
@@ -74,7 +56,7 @@ pipeline {  // pipeline：声明流水线
                         python -m venv .venv
                     }
 
-                    # 使用项目虚拟环境安装依赖
+                    # 使用项目虚拟环境安装依赖，.venv\\Scripts\\python.exe：省去了激活虚拟环境的步骤，但是效果相同，且 CI 时效果更好
                     .venv\\Scripts\\python.exe -m pip install -r requirements.txt
                 '''
             }
@@ -92,7 +74,7 @@ pipeline {  // pipeline：声明流水线
             }
             steps {
                 powershell '''
-                    .venv\\Scripts\\python.exe -m pytest tests\\api\\ -m api --alluredir=allure-results\\api
+                    .venv\\Scripts\\python.exe -m pytest tests\\api\\ --alluredir=allure-results\\api
                 '''
             }
         }
@@ -109,7 +91,7 @@ pipeline {  // pipeline：声明流水线
             }
             steps {
                 powershell '''
-                    .venv\\Scripts\\python.exe -m pytest tests\\ui\\ -m ui --alluredir=allure-results\\ui
+                    .venv\\Scripts\\python.exe -m pytest tests\\ui\\ --alluredir=allure-results\\ui
                 '''
             }
         }
@@ -128,13 +110,18 @@ pipeline {  // pipeline：声明流水线
 
     post {      // post：所有 stages 执行结束以后，根据 Pipeline 状态执行一些后置操作
         always {
-            // 生成 Allure 报告
-            allure includeProperties: false, jdk: '', results: [[path: 'allure-results\\api'], [path: 'allure-results\\ui'], [path: 'allure-results\\markers']]
-
-            // 清理工作区（即 clean workspace）
-            cleanWs()
-        }
-        failure {   // 只有 Pipeline 最终失败时执行
+            // 用 Jenkins 生成 Allure 报告，当前写法是 allure2
+            script {
+          def results = []
+          if (fileExists('allure-results\\api'))       results.add('allure-results\\api')
+          if (fileExists('allure-results\\ui'))        results.add('allure-results\\ui')
+          if (fileExists('allure-results\\markers'))   results.add('allure-results\\markers')
+          allure includeProperties: false, jdk: '', results: results
+      }
+      // 清理工作区（即 clean workspace）
+      cleanWs()
+    }
+    failure {   // 只有 Pipeline 最终失败时执行
             echo 'Pipeline 执行失败，请检查日志和 Allure 报告'
         }
     }
