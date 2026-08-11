@@ -26,9 +26,9 @@ pipeline {  // pipeline：声明流水线
                     // 这些 agent 可以是本地的，也可以是远程的，甚至可以是云端的，Jenkins 会根据配置选择一个可用的 agent 来执行流水线任务。
 
     parameters {
-        choice(name: 'ENV', choices: ['dev', 'test', 'prod'], description: '选择测试环境')    // 下拉框，用户自己选
-        choice(name: 'SCOPE', choices: ['all', 'ui', 'api'], description: '选择测试范围')     // 下拉框，用户自己选
-        string(name: 'MARKERS', defaultValue: '', description: '自定义 pytest markers，如 smoke 或 regression')
+        choice(name: 'ENV', choices: ['dev', 'test', 'prod'], description: 'Select test environment')    // 下拉框，用户自己选
+        choice(name: 'SCOPE', choices: ['all', 'ui', 'api'], description: 'select test scope')     // 下拉框，用户自己选
+        string(name: 'MARKERS', defaultValue: '', description: 'define pytest markers，example smoke or regression')
     }
     environment {
         // 切换环境：dev / test / prod
