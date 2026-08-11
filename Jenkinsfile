@@ -22,7 +22,7 @@ Jenkinsfile 包含
 
 
 pipeline {  // pipeline：声明流水线
-    agent any       // Jenkins 可以选择任意一个可用的 Agent（执行节点）来运行这条 Pipeline，当 jenkins server 启动时，会有多个 agent，
+    agent any       // Jenkins 可以选择从"已经配置好的节点"里面选择一个可用的 Agent（执行节点）来运行这条 Pipeline
                     // 这些 agent 可以是本地的，也可以是远程的，甚至可以是云端的，Jenkins 会根据配置选择一个可用的 agent 来执行流水线任务。
 
     parameters {
@@ -37,6 +37,7 @@ pipeline {  // pipeline：声明流水线
         TEST_HEADLESS = 'true'
         // 浏览器类型
         TEST_BROWSER = 'chrome'
+        TEST_MARKERS = "${params.MARKERS}"
     }
 
     stages {        // stages：声明流水线的阶段
@@ -50,9 +51,12 @@ pipeline {  // pipeline：声明流水线
         // 安装依赖，建立阶段, 使用项目虚拟环境安装依赖，.venv\\Scripts\\python.exe：省去了激活虚拟环境的步骤，但是效果相同，且 CI 时效果更好
         stage('Setup') {
             steps {
-                powershell '''
+                powershell(
+                 encoding: 'UTF-8',
+                 script: '''
                     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
                     $OutputEncoding = [System.Text.Encoding]::UTF8
+                    $env:PYTHONIOENCODING = 'utf-8'
 
                     if (-not (Test-Path ".venv")) {
                         python -m venv .venv
@@ -60,6 +64,7 @@ pipeline {  // pipeline：声明流水线
 
                     .venv\\Scripts\\python.exe -m pip install -r requirements.txt
                 '''
+                )
             }
         }
 
@@ -74,12 +79,16 @@ pipeline {  // pipeline：声明流水线
                 }
             }
             steps {
-                powershell '''
+                powershell(
+                 encoding: 'UTF-8',
+                 script: '''
                     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
                     $OutputEncoding = [System.Text.Encoding]::UTF8
+                    $env:PYTHONIOENCODING = 'utf-8'
 
                     .venv\\Scripts\\python.exe -m pytest tests\\api\\ --alluredir=allure-results\\api
                 '''
+                )
             }
         }
 
@@ -94,12 +103,16 @@ pipeline {  // pipeline：声明流水线
                 }
             }
             steps {
-                powershell '''
+                powershell(
+                    encoding: 'UTF-8',
+                    script: '''
                     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
                     $OutputEncoding = [System.Text.Encoding]::UTF8
+                    $env:PYTHONIOENCODING = 'utf-8'
 
                     .venv\\Scripts\\python.exe -m pytest tests\\ui\\ --alluredir=allure-results\\ui
                 '''
+                )
             }
         }
 
@@ -108,12 +121,16 @@ pipeline {  // pipeline：声明流水线
                 expression { params.MARKERS != '' }     // 只要 MARKERS 不为空，就执行
             }
             steps {
-                powershell """
+                powershell(
+                    encoding: 'UTF-8',
+                    script: '''
                     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
                     $OutputEncoding = [System.Text.Encoding]::UTF8
+                    $env:PYTHONIOENCODING = 'utf-8'
 
                     .venv\\Scripts\\python.exe -m pytest -m ${params.MARKERS} --alluredir=allure-results\\markers
-                """
+                '''
+                )
             }
         }
     }
