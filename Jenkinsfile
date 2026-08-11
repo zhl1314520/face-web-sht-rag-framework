@@ -34,7 +34,7 @@ pipeline {  // pipeline：声明流水线
         // 切换环境：dev / test / prod
         TEST_ENV = "${params.ENV}"      // params 是 Jenkins Pipeline 提供的固定参数对象
         // CI 环境使用 headless 模式（无浏览器窗口模式）
-        TEST_HEADLESS = 'true'
+        TEST_HEADLESS = 'false'
         // 浏览器类型
         TEST_BROWSER = 'chrome'
         TEST_MARKERS = "${params.MARKERS}"
