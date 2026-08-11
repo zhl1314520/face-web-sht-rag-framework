@@ -47,16 +47,17 @@ pipeline {  // pipeline：声明流水线
             }
         }
 
-        // 安装依赖，建立阶段
+        // 安装依赖，建立阶段, 使用项目虚拟环境安装依赖，.venv\\Scripts\\python.exe：省去了激活虚拟环境的步骤，但是效果相同，且 CI 时效果更好
         stage('Setup') {
             steps {
                 powershell '''
-                    # 创建项目虚拟环境
+                    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+                    $OutputEncoding = [System.Text.Encoding]::UTF8
+
                     if (-not (Test-Path ".venv")) {
                         python -m venv .venv
                     }
 
-                    # 使用项目虚拟环境安装依赖，.venv\\Scripts\\python.exe：省去了激活虚拟环境的步骤，但是效果相同，且 CI 时效果更好
                     .venv\\Scripts\\python.exe -m pip install -r requirements.txt
                 '''
             }
@@ -74,6 +75,9 @@ pipeline {  // pipeline：声明流水线
             }
             steps {
                 powershell '''
+                    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+                    $OutputEncoding = [System.Text.Encoding]::UTF8
+
                     .venv\\Scripts\\python.exe -m pytest tests\\api\\ --alluredir=allure-results\\api
                 '''
             }
@@ -91,6 +95,9 @@ pipeline {  // pipeline：声明流水线
             }
             steps {
                 powershell '''
+                    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+                    $OutputEncoding = [System.Text.Encoding]::UTF8
+
                     .venv\\Scripts\\python.exe -m pytest tests\\ui\\ --alluredir=allure-results\\ui
                 '''
             }
@@ -102,6 +109,9 @@ pipeline {  // pipeline：声明流水线
             }
             steps {
                 powershell """
+                    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+                    $OutputEncoding = [System.Text.Encoding]::UTF8
+
                     .venv\\Scripts\\python.exe -m pytest -m ${params.MARKERS} --alluredir=allure-results\\markers
                 """
             }
