@@ -46,7 +46,8 @@ def driver():
         headless=settings_frontend.headless,
         remote_url=settings_frontend.remote_url,
     )
-    driver.maximize_window()
+    # driver.maximize_window()
+    driver.set_window_size(1920, 1080)  # 设置浏览器窗口大小，兼容 Jenkins headless 模式
     """
     分为 3 个阶段
     1. 准备阶段：执行 yield driver 之前的代码，即准备资源（setup）
