@@ -139,12 +139,18 @@ pipeline {  // pipeline：声明流水线
         always {
             // 用 Jenkins 生成 Allure 报告，当前写法是 allure2
             script {
-          def results = []
-          if (fileExists('allure-results\\api'))       results.add('allure-results\\api')
-          if (fileExists('allure-results\\ui'))        results.add('allure-results\\ui')
-          if (fileExists('allure-results\\markers'))   results.add('allure-results\\markers')
-          allure includeProperties: false, jdk: '', results: results
-      }
+            if (fileExists('allure-results')) {
+                allure(
+                    includeProperties: false,
+                    jdk: '',
+                    results: [
+                        [path: 'allure-results']
+                    ]
+                )
+            } else {
+                echo '未找到 allure-results 目录，跳过 Allure 报告生成'
+            }
+        }
       // 清理工作区（即 clean workspace）
       cleanWs()
     }
