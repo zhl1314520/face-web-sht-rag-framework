@@ -139,18 +139,37 @@ pipeline {  // pipeline：声明流水线
         always {
             // 用 Jenkins 生成 Allure 报告，当前写法是 allure2
             script {
-            if (fileExists('allure-results')) {
-                allure(
-                    includeProperties: false,
-                    jdk: '',
-                    results: [
-                        [path: 'allure-results']
-                    ]
-                )
-            } else {
-                echo '未找到 allure-results 目录，跳过 Allure 报告生成'
+                bat '''
+                    echo ===== WHO AM I =====
+                    whoami
+
+                    echo ===== USERPROFILE =====
+                    echo %USERPROFILE%
+
+                    echo ===== JENKINS_HOME =====
+                    echo %JENKINS_HOME%
+
+                    echo ===== WORKSPACE =====
+                    echo %WORKSPACE%
+
+                    echo ===== ALLURE DIRECTORY =====
+                    dir "%USERPROFILE%\\.jenkins\\tools\\org.allurereport.jenkins.tools.AllureCommandlineInstallation" /s /b 2>nul
+
+                    echo ===== ALLURE BAT SEARCH =====
+                    where /r "C:\\Users" allure.bat 2>nul
+                '''
+                if (fileExists('allure-results')) {
+                    allure(
+                        includeProperties: false,
+                        jdk: '',
+                        results: [
+                            [path: 'allure-results']
+                        ]
+                    )
+                } else {
+                    echo '未找到 allure-results 目录，跳过 Allure 报告生成'
+                }
             }
-        }
       // 清理工作区（即 clean workspace）
       cleanWs()
     }
