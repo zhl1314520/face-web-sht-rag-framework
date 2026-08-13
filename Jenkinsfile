@@ -163,7 +163,9 @@ pipeline {  // pipeline：声明流水线
                         includeProperties: false,
                         jdk: '',
                         results: [
-                            [path: 'allure-results']
+                            [path: 'allure-results\\api'],
+                            [path: 'allure-results\\ui'],
+                            [path: 'allure-results\\markers']
                         ]
                     )
                 } else {
